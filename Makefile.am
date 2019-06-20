@@ -245,6 +245,8 @@ collectd_SOURCES = \
 	src/daemon/utils_cache.h \
 	src/daemon/utils_complain.c \
 	src/daemon/utils_complain.h \
+	src/utils/ignorelist/utils_ignorelist.c \
+	src/utils/ignorelist/utils_ignorelist.h \
 	src/daemon/utils_llist.c \
 	src/daemon/utils_llist.h \
 	src/daemon/utils_random.c \
@@ -764,7 +766,7 @@ if BUILD_PLUGIN_CGROUPS
 pkglib_LTLIBRARIES += cgroups.la
 cgroups_la_SOURCES = src/cgroups.c
 cgroups_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-cgroups_la_LIBADD = libignorelist.la libmount.la
+cgroups_la_LIBADD = libmount.la
 endif
 
 if BUILD_PLUGIN_CHRONY
@@ -890,7 +892,7 @@ if BUILD_PLUGIN_DF
 pkglib_LTLIBRARIES += df.la
 df_la_SOURCES = src/df.c
 df_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-df_la_LIBADD = libignorelist.la libmount.la
+df_la_LIBADD = libmount.la
 endif
 
 if BUILD_PLUGIN_DISK
@@ -899,7 +901,7 @@ disk_la_SOURCES = src/disk.c
 disk_la_CFLAGS = $(AM_CFLAGS)
 disk_la_CPPFLAGS = $(AM_CPPFLAGS)
 disk_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-disk_la_LIBADD = libignorelist.la
+disk_la_LIBADD =
 if BUILD_WITH_LIBKSTAT
 disk_la_LIBADD += -lkstat
 endif
@@ -1097,7 +1099,7 @@ pkglib_LTLIBRARIES += interface.la
 interface_la_SOURCES = src/interface.c
 interface_la_CFLAGS = $(AM_CFLAGS)
 interface_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-interface_la_LIBADD = libignorelist.la
+interface_la_LIBADD =
 if BUILD_WITH_LIBSTATGRAB
 interface_la_CFLAGS += $(BUILD_WITH_LIBSTATGRAB_CFLAGS)
 interface_la_LIBADD += $(BUILD_WITH_LIBSTATGRAB_LDFLAGS)
@@ -1133,7 +1135,7 @@ pkglib_LTLIBRARIES += ipmi.la
 ipmi_la_SOURCES = src/ipmi.c
 ipmi_la_CFLAGS = $(AM_CFLAGS) $(BUILD_WITH_OPENIPMI_CFLAGS)
 ipmi_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-ipmi_la_LIBADD = libignorelist.la $(BUILD_WITH_OPENIPMI_LIBS)
+ipmi_la_LIBADD = $(BUILD_WITH_OPENIPMI_LIBS)
 endif
 
 if BUILD_PLUGIN_IPVS
@@ -1146,7 +1148,6 @@ if BUILD_PLUGIN_IRQ
 pkglib_LTLIBRARIES += irq.la
 irq_la_SOURCES = src/irq.c
 irq_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-irq_la_LIBADD = libignorelist.la
 endif
 
 if BUILD_PLUGIN_JAVA
@@ -1220,7 +1221,6 @@ madwifi_la_SOURCES = \
 	src/madwifi.c \
 	src/madwifi.h
 madwifi_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-madwifi_la_LIBADD = libignorelist.la
 endif
 
 if BUILD_PLUGIN_MATCH_EMPTY_COUNTER
@@ -1273,7 +1273,6 @@ if BUILD_PLUGIN_MD
 pkglib_LTLIBRARIES += md.la
 md_la_SOURCES = src/md.c
 md_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-md_la_LIBADD = libignorelist.la
 endif
 
 if BUILD_PLUGIN_MEMCACHEC
@@ -1323,7 +1322,7 @@ pkglib_LTLIBRARIES += mic.la
 mic_la_SOURCES = src/mic.c
 mic_la_CPPFLAGS = $(AM_CPPFLAGS) $(BUILD_WITH_MIC_CPPFLAGS)
 mic_la_LDFLAGS = $(PLUGIN_LDFLAGS) $(BUILD_WITH_MIC_LDFLAGS)
-mic_la_LIBADD = libignorelist.la $(BUILD_WITH_MIC_LIBS)
+mic_la_LIBADD = $(BUILD_WITH_MIC_LIBS)
 endif
 
 if BUILD_PLUGIN_MODBUS
@@ -1361,7 +1360,7 @@ pkglib_LTLIBRARIES += netapp.la
 netapp_la_SOURCES = src/netapp.c
 netapp_la_CPPFLAGS = $(AM_CPPFLAGS) $(LIBNETAPP_CPPFLAGS)
 netapp_la_LDFLAGS = $(PLUGIN_LDFLAGS) $(LIBNETAPP_LDFLAGS)
-netapp_la_LIBADD = libignorelist.la $(LIBNETAPP_LIBS)
+netapp_la_LIBADD = $(LIBNETAPP_LIBS)
 endif
 
 if BUILD_PLUGIN_NETLINK
@@ -1467,7 +1466,7 @@ pkglib_LTLIBRARIES += onewire.la
 onewire_la_SOURCES = src/onewire.c
 onewire_la_CPPFLAGS = $(AM_CPPFLAGS) $(BUILD_WITH_LIBOWCAPI_CPPFLAGS)
 onewire_la_LDFLAGS = $(PLUGIN_LDFLAGS) $(BUILD_WITH_LIBOWCAPI_LDFLAGS)
-onewire_la_LIBADD = libignorelist.la $(BUILD_WITH_LIBOWCAPI_LIBS)
+onewire_la_LIBADD = $(BUILD_WITH_LIBOWCAPI_LIBS)
 endif
 
 if BUILD_PLUGIN_OPENLDAP
@@ -1634,7 +1633,6 @@ if BUILD_PLUGIN_PROTOCOLS
 pkglib_LTLIBRARIES += protocols.la
 protocols_la_SOURCES = src/protocols.c
 protocols_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-protocols_la_LIBADD = libignorelist.la
 endif
 
 if BUILD_PLUGIN_REDIS
@@ -1680,7 +1678,7 @@ pkglib_LTLIBRARIES += sensors.la
 sensors_la_SOURCES = src/sensors.c
 sensors_la_CPPFLAGS = $(AM_CPPFLAGS) $(BUILD_WITH_LIBSENSORS_CPPFLAGS)
 sensors_la_LDFLAGS = $(PLUGIN_LDFLAGS) $(BUILD_WITH_LIBSENSORS_LDFLAGS)
-sensors_la_LIBADD = libignorelist.la $(BUILD_WITH_LIBSENSORS_LIBS)
+sensors_la_LIBADD = $(BUILD_WITH_LIBSENSORS_LIBS)
 endif
 
 if BUILD_PLUGIN_SERIAL
@@ -1703,7 +1701,7 @@ pkglib_LTLIBRARIES += smart.la
 smart_la_SOURCES = src/smart.c
 smart_la_CPPFLAGS = $(AM_CPPFLAGS) $(BUILD_WITH_LIBATASMART_CPPFLAGS) $(BUILD_WITH_LIBUDEV_CPPFLAGS)
 smart_la_LDFLAGS = $(PLUGIN_LDFLAGS) $(BUILD_WITH_LIBATASMART_LDFLAGS) $(BUILD_WITH_LIBUDEV_LDFLAGS)
-smart_la_LIBADD = libignorelist.la $(BUILD_WITH_LIBATASMART_LIBS) $(BUILD_WITH_LIBUDEV_LIBS)
+smart_la_LIBADD = $(BUILD_WITH_LIBATASMART_LIBS) $(BUILD_WITH_LIBUDEV_LIBS)
 endif
 endif
 
@@ -1876,7 +1874,6 @@ if BUILD_PLUGIN_THERMAL
 pkglib_LTLIBRARIES += thermal.la
 thermal_la_SOURCES = src/thermal.c
 thermal_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-thermal_la_LIBADD = libignorelist.la
 endif
 
 if BUILD_PLUGIN_THRESHOLD
@@ -1957,7 +1954,7 @@ virt_la_SOURCES = src/virt.c
 virt_la_CFLAGS = $(AM_CFLAGS) \
 	$(BUILD_WITH_LIBVIRT_CFLAGS) $(BUILD_WITH_LIBXML2_CFLAGS)
 virt_la_LDFLAGS = $(PLUGIN_LDFLAGS)
-virt_la_LIBADD = libignorelist.la $(BUILD_WITH_LIBVIRT_LIBS) $(BUILD_WITH_LIBXML2_LIBS)
+virt_la_LIBADD = $(BUILD_WITH_LIBVIRT_LIBS) $(BUILD_WITH_LIBXML2_LIBS)
 
 test_plugin_virt_SOURCES = src/virt_test.c src/daemon/configfile.c \
 	src/daemon/types_list.c
